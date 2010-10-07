@@ -1,0 +1,7 @@
+; $Id$
+name = Menu require
+description = Force the user to assign a node to a menu.
+package = Other
+core = 6.x
+
+version = "6.x-1.0"

@@ -1,0 +1,8 @@
+Menu require Drupal module.
+Copyright (C) 2008-2010 Jean-François Hovinne - http://www.hovinne.com/
+
+This Drupal module forces the user to assign a node to a menu.
+The node types for which the menu item will be required are configurable.
+
+version = "6.x-1.0"
+license = "GPL"

@@ -1,0 +1,90 @@
+<?php
+// $Id: menu_require.module
+
+/**
+* @file
+* Force the user to assign a node to a menu.
+*/
+
+/**
+ * Implementation of hook_help().
+ */
+function menu_require_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case 'admin/settings/modules#description':
+      $output = t('Force the user to assign a node to a menu.');
+      break;
+    case 'admin/settings/menu_require':
+      $output = t('<p>Force the user to assign a node to a menu.</p>');
+      break;
+  }
+  
+  return $output;
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function menu_require_menu() {
+  $items = array();
+
+  $items['admin/settings/menu_require'] = array(
+    'title' => 'Menu require',
+    'description' => 'Configure menu require.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('menu_require_admin_settings_form'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+* Implementation of hook_form_alter().
+* Based on http://drupal.org/node/466620
+*/
+function menu_require_form_alter(&$form, &$form_state, $form_id) {
+  
+  // Get the configured types for which the menu link_title is required and construct the form ids
+  $types = array_map('_menu_require_types_mapper', variable_get('menu_require_block_display_types', array()));
+
+  // Compare the form ids (e.g. 'page_node_form'), and alter the form if found
+  if(in_array($form_id, $types)) {
+    // Make the menu fieldset expanded by default so it won't need to be opened.
+    $form['menu']['#collapsed'] = FALSE;
+    // Make the menu link_title required
+    $form['menu']['link_title']['#required'] = TRUE;
+  }
+
+}
+
+/**
+ * Menu require admin settings form.
+ *
+ * @return
+ * The settings form used by Menu require.
+ */
+function menu_require_admin_settings_form() {
+
+  // Node types
+  $types = node_get_types();
+  $options = array();
+  foreach ($types as $type) {
+    $options[$type->type] = $type->name;
+  }
+
+  $form['menu_require_block_display_types'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Node types for which the menu link title will be required'),
+    '#options' => $options,
+    '#default_value' => variable_get('menu_require_block_display_types', array()),
+  );
+
+  return system_settings_form($form);
+}
+
+function _menu_require_types_mapper($value) {
+  return $value . '_node_form';
+};

@@ -1,0 +1,18 @@
+<?php
+// $Id: menu_require.install
+
+/**
+* Implementation of hook_install()
+*/
+function menu_require_install() {
+  // Set the module weight so it can override other modules.
+  db_query("UPDATE {system} SET weight = 99 WHERE name = 'menu_require'");
+}
+
+/**
+* Implementation of hook_uninstall()
+*/
+function menu_require_uninstall() {
+  // Remove the module from the system table
+  db_query("DELETE FROM {system} WHERE name = 'menu_require'");
+}
